@@ -24,7 +24,7 @@ def run_case(nproc, nx, ny, *, layout=None, problem="mixed", serial=False, outpu
         launcher = shutil.which("mpiexec") or shutil.which("mpirun")
         if launcher is None:
             raise RuntimeError("MPI launcher missing: install OpenMPI or MPICH")
-        args = [launcher, "-n", str(nproc)] + args
+        args = [launcher, "--oversubscribe", "-n", str(nproc)] + args
     env = os.environ.copy()
     env.update({"OMPI_ALLOW_RUN_AS_ROOT": "1", "OMPI_ALLOW_RUN_AS_ROOT_CONFIRM": "1",
                 "OMPI_MCA_rmaps_base_oversubscribe": "1"})
