@@ -1,0 +1,16 @@
+name: Build and validate MPI solver
+on:
+  push:
+  pull_request:
+jobs:
+  mpi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install OpenMPI
+        run: sudo apt-get update && sudo apt-get install -y openmpi-bin libopenmpi-dev
+      - name: Compile
+        run: make
+      - name: MPI and numerical validation
+        run: make test
