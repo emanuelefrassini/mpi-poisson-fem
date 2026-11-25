@@ -1,4 +1,4 @@
-# Parallel Poisson Solver — MPI and Finite Elements
+# Parallel Poisson Solver - MPI and Finite Elements
 
 A C/MPI implementation of a distributed **Conjugate Gradient (CG)** solver for the two-dimensional Poisson equation. The project applies numerical methods and parallel-computing concepts from MSc Applied Mathematics HPC coursework at **TU Delft**.
 
