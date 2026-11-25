@@ -7,13 +7,13 @@ A C/MPI implementation of a distributed **Conjugate Gradient (CG)** solver for t
 *Solution computed on a 127×127 interior mesh in the single-process validation. Distributed MPI runs are validated separately.*
 
 Features:
-- Structured mesh of right-triangular **P1 finite elements** on the unit square.
-- A **matrix-free** stiffness operator, equivalent to the assembled P1 FEM operator on this uniform mesh.
+- Structured mesh of right triangular **P1 finite elements** on the unit square.
+- A **matrix free** stiffness operator, equivalent to the assembled P1 FEM operator on this uniform mesh.
 - **Nodal mass-lumped load** and homogeneous Dirichlet boundary conditions.
 - 2D MPI Cartesian domain decomposition with an uneven partition supported.
-- Ghost-cell exchanges using `MPI_Sendrecv`, global dot products using `MPI_Allreduce`.
-- Conjugate Gradient solver, wall-time benchmark and residual diagnostics.
-- Verification using two manufactured solutions and an observed second-order discretisation error.
+- Ghost cell exchanges using `MPI_Sendrecv`, global dot products using `MPI_Allreduce`.
+- Conjugate Gradient solver, wall time benchmark and residual diagnostics.
+- Verification using two manufactured solutions and an observed second order discretisation error.
 
 ## Problem
 
@@ -31,7 +31,7 @@ u(x,y)=\sin(\pi x)\sin(\pi y)(1+0.3x+0.15y+0.2xy).
 
 The forcing is obtained analytically as \(f=-\Delta u\). The smooth manufactured solution avoids the trivially one-iteration CG solve of a single discrete sine eigenmode.
 
-**Important numerical scope:** The code exploits the fact that the assembled P1 stiffness operator on *this particular uniform right-triangle mesh* has a five-point stencil. It is not a general unstructured-mesh FEM library. The nodal mass-lumped right-hand side also differs from exact element-load integration. See [numerical details](docs/numerics.md).
+**Important numerical scope:** The code exploits the fact that the assembled P1 stiffness operator on *this particular uniform right-triangle mesh* has a five-point stencil. See [numerical details](docs/numerics.md).
 
 ## Dependencies
 
@@ -50,7 +50,7 @@ mpirun -np 1 ./bin/poisson_mpi --nx 63 --ny 63
 mpirun -np 4 ./bin/poisson_mpi --nx 63 --ny 63 --px 2 --py 2
 ```
 
-`--nx` and `--ny` are numbers of *interior* nodes per direction; the boundary is at 0 and 1. MPI chooses a process topology automatically if `--px/--py` are omitted. Custom topology is supported, including uneven partitions. Sample output (values shown are from a **single-process smoke-test computation**, not an MPI benchmark):
+`--nx` and `--ny` are numbers of *interior* nodes per direction; the boundary is at 0 and 1. MPI chooses a process topology automatically if `--px/--py` are omitted. Custom topology is supported, including uneven partitions. Sample output (values shown are from a **single process smoke test computation**, not an MPI benchmark):
 
 ```text
 RESULT nx=31 ny=31 ranks=1 px=1 py=1 case=mixed iterations=67 converged=1 relative_residual=8.144055441e-11 true_residual=8.143871427e-11 l2_error=5.152332297e-04 rel_l2_error=8.063973723e-04 linf_error=1.040886758e-03 time_sec=...
@@ -147,7 +147,7 @@ The mass-lumped load is \(b_{ij}=h_xh_y f(x_i,y_j)\). CG uses neighbor exchange 
 
 ## Portfolio context and provenance
 
-Developed around the mathematical and parallel-computing topics studied in the TU Delft HPC course: Poisson's equation, finite elements, MPI domain decomposition, neighbour communication and collective reductions. This standalone implementation does not redistribute course-provided source code or assignment handouts. If you adapt the source or reuse a third-party component, retain its attribution and applicable license terms.
+Developed around the mathematical and parallel computing topics studied in the TU Delft HPC course: Poisson's equation, finite elements, MPI domain decomposition, neighbour communication and collective reductions. This standalone implementation does not redistribute course-provided source code or assignment handouts. If you adapt the source or reuse a third-party component, retain its attribution and applicable license terms.
 
 ## Project layout
 
