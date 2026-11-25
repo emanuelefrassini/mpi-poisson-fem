@@ -1,15 +1,15 @@
 # Parallel Poisson Solver - MPI and Finite Elements
 
-A C/MPI implementation of a distributed **Conjugate Gradient (CG)** solver for the two-dimensional Poisson equation. The project applies numerical methods and parallel-computing concepts from MSc Applied Mathematics HPC coursework at **TU Delft**.
+A C/MPI implementation of a distributed **Conjugate Gradient (CG)** solver for the two dimensional Poisson equation. The project applies numerical methods and parallel computing concepts from MSc Applied Mathematics HPC coursework at **TU Delft**.
 
 ![Computed P1 FEM solution for the 127×127 interior mesh (single-process validation)](figures/solution.png)
 
-*Solution computed on a 127×127 interior mesh in the single-process validation. Distributed MPI runs are validated separately.*
+*Solution computed on a 127×127 interior mesh in the single process validation. Distributed MPI runs are validated separately.*
 
 Features:
 - Structured mesh of right triangular **P1 finite elements** on the unit square.
 - A **matrix free** stiffness operator, equivalent to the assembled P1 FEM operator on this uniform mesh.
-- **Nodal mass-lumped load** and homogeneous Dirichlet boundary conditions.
+- **Nodal mass lumped load** and homogeneous Dirichlet boundary conditions.
 - 2D MPI Cartesian domain decomposition with an uneven partition supported.
 - Ghost cell exchanges using `MPI_Sendrecv`, global dot products using `MPI_Allreduce`.
 - Conjugate Gradient solver, wall time benchmark and residual diagnostics.
@@ -29,9 +29,9 @@ The default exact solution used to validate the implementation is
 u(x,y)=\sin(\pi x)\sin(\pi y)(1+0.3x+0.15y+0.2xy).
 \]
 
-The forcing is obtained analytically as \(f=-\Delta u\). The smooth manufactured solution avoids the trivially one-iteration CG solve of a single discrete sine eigenmode.
+The forcing is obtained analytically as \(f=-\Delta u\). The smooth manufactured solution avoids the trivially one iteration CG solve of a single discrete sine eigenmode.
 
-**Important numerical scope:** The code exploits the fact that the assembled P1 stiffness operator on *this particular uniform right-triangle mesh* has a five-point stencil. See [numerical details](docs/numerics.md).
+**Important numerical scope:** The code exploits the fact that the assembled P1 stiffness operator on *this particular uniform right triangle mesh* has a five point stencil. See [numerical details](docs/numerics.md).
 
 ## Dependencies
 
@@ -56,7 +56,7 @@ mpirun -np 4 ./bin/poisson_mpi --nx 63 --ny 63 --px 2 --py 2
 RESULT nx=31 ny=31 ranks=1 px=1 py=1 case=mixed iterations=67 converged=1 relative_residual=8.144055441e-11 true_residual=8.143871427e-11 l2_error=5.152332297e-04 rel_l2_error=8.063973723e-04 linf_error=1.040886758e-03 time_sec=...
 ```
 
-The `RESULT` record is machine-readable and contains MPI process count, topology, iterations, true residual, L2 error, maximum error, and elapsed time (maximum across MPI ranks). **Converged** means the iterative residual is below the threshold; the manufactured solution tests separately check the mathematical error.
+The `RESULT` record is machine readable and contains MPI process count, topology, iterations, true residual, L2 error, maximum error, and elapsed time (maximum across MPI ranks). **Converged** means the iterative residual is below the threshold; the manufactured solution tests separately check the mathematical error.
 
 ## Validation
 
@@ -64,9 +64,9 @@ The `RESULT` record is machine-readable and contains MPI process count, topology
 make test
 ```
 
-Tests run on 1, 2 and 4 MPI ranks, compare alternative decompositions against a single rank, check non-square grids, inspect distributed output completeness and verify second-order numerical convergence under mesh refinement.
+Tests run on 1, 2 and 4 MPI ranks, compare alternative decompositions against a single rank, check non square grids, inspect distributed output completeness and verify second order numerical convergence under mesh refinement.
 
-For a CPU-only single-process smoke test on a machine without MPI:
+For a CPU-only single process smoke test on a machine without MPI:
 
 ```bash
 make smoke
@@ -83,7 +83,7 @@ This fallback validates mathematical logic **but does not exercise real MPI comm
 | 63 × 63 | 1.288e-4 | 138 |
 | 127 × 127 | 3.219e-5 | 279 |
 
-The L2 error decreases by approximately a factor of four per grid refinement, as expected for this smooth problem. These values were directly computed using the single-rank test executable; they are not MPI speedup measurements.
+The L2 error decreases by approximately a factor of four per grid refinement, as expected for this smooth problem. These values were directly computed using the single rank test executable; they are not MPI speedup measurements.
 
 ## Visualise the numerical solution
 
@@ -126,9 +126,9 @@ The larger workload shows better parallel scaling, reaching
 a 2.50x speedup with four MPI processes. Scaling remains
 sublinear because of communication and synchronisation overhead.
 
-Single-rank timing variability is substantial, so these results
+Single rank timing variability is substantial, so these results
 should be treated as indicative measurements rather than
-hardware-independent performance guarantees.
+hardware independent performance guarantees.
 
 ![MPI speedup](figures/benchmark_511/speedup.png)
 
@@ -143,19 +143,19 @@ For the grid with spacings \(h_x\) and \(h_y\), the FEM interior stiffness row i
 \quad c_x=h_y/h_x,\;c_y=h_x/h_y.
 \]
 
-The mass-lumped load is \(b_{ij}=h_xh_y f(x_i,y_j)\). CG uses neighbor exchange on each sparse matrix-vector multiply, plus global reductions for inner products. See [docs/numerics.md](docs/numerics.md) for derivation, algorithmic limits, and validation criteria.
+The mass lumped load is \(b_{ij}=h_xh_y f(x_i,y_j)\). CG uses neighbor exchange on each sparse matrix-vector multiply, plus global reductions for inner products. See [docs/numerics.md](docs/numerics.md) for derivation, algorithmic limits, and validation criteria.
 
 ## Portfolio context and provenance
 
-Developed around the mathematical and parallel computing topics studied in the TU Delft HPC course: Poisson's equation, finite elements, MPI domain decomposition, neighbour communication and collective reductions. This standalone implementation does not redistribute course-provided source code or assignment handouts. If you adapt the source or reuse a third-party component, retain its attribution and applicable license terms.
+Developed around the mathematical and parallel computing topics studied in the TU Delft HPC course: Poisson's equation, finite elements, MPI domain decomposition, neighbour communication and collective reductions. This standalone implementation does not redistribute course source code or assignment handouts. If you adapt the source or reuse a third party component, retain its attribution and applicable license terms.
 
 ## Project layout
 
 ```text
 src/poisson_mpi.c          Solver and MPI domain decomposition
-scripts/benchmark.py      Repeated real-MPI strong-scaling runs
+scripts/benchmark.py      Repeated real MPI strong scaling runs
 scripts/plot_results.py   Plot saved solver and performance results
-tests/test_solver.py      Black-box mathematical and MPI tests
-tests/mpi_shim.*          Single-process fallback for non-MPI environments
+tests/test_solver.py      Black box mathematical and MPI tests
+tests/mpi_shim.*          Single process fallback for non MPI environments
 .github/workflows/       Automated build and MPI tests
 ```
